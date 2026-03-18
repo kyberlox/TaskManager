@@ -73,3 +73,7 @@ secrets.ini
 
 # Файлы окружения (кроме примера)
 !.env.example
+!README.md
+!app/
+!docker-compose.yaml
+!nginx/
