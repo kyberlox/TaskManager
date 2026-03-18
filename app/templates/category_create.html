@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Создание категории - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Создание категории</h1>
+
+<div class="card">
+    <form method="POST" action="/categories/create">
+        <div class="form-group">
+            <label for="name">Название</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="color">Цвет (HEX)</label>
+            <input type="color" id="color" name="color" value="#6a11cb">
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+        <a href="/categories" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

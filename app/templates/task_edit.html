@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование задачи - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Редактирование задачи</h1>
+
+<div class="card">
+    <form method="POST" action="/task/{{ task.id }}/edit" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Название *</label>
+            <input type="text" id="title" name="title" value="{{ task.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" rows="4">{{ task.description or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="due_date">Срок выполнения</label>
+            <input type="datetime-local" id="due_date" name="due_date"
+                   value="{{ task.due_date.strftime('%Y-%m-%dT%H:%M') if task.due_date else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="category_id">Категория</label>
+            <select id="category_id" name="category_id">
+                <option value="">Без категории</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if task.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="is_active">Активна</label>
+            <input type="checkbox" id="is_active" name="is_active" {% if task.is_active %}checked{% endif %}>
+        </div>
+        <div class="form-group">
+            <label for="preview">Превью (изображение)</label>
+            <input type="file" id="preview" name="preview" accept="image/*">
+            {% if task.preview_image_path %}
+            <div style="margin-top: 0.5rem;">
+                <strong>Текущее превью:</strong><br>
+                <img src="{{ task.preview_image_path }}" alt="Превью" style="max-width: 200px; border-radius: 5px;">
+            </div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="/task/{{ task.id }}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

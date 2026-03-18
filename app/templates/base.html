@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Manager{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* Минимальные inline стили для структуры */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+            color: var(--text-secondary);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="logo">TaskManager</div>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tasks">Задачи</a></li>
+                <li><a href="/categories">Категории</a></li>
+                <li><a href="/profile">Профиль</a></li>
+                {% if request.state.user and request.state.user.is_admin %}
+                <li><a href="/users">Пользователи</a></li>
+                {% endif %}
+                {% if request.state.user %}
+                <li><a href="/logout">Выйти</a></li>
+                {% else %}
+                <li><a href="/login">Войти</a></li>
+                <li><a href="/register">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+        {% if message %}
+        <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        &copy; 2026 Task Manager. Все права защищены.
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Просмотр файла - {{ file.name }}{% endblock %}
+
+{% block content %}
+<div style="padding: 1rem; max-width: 100vw;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h1 style="color: var(--accent-purple); margin: 0;">Просмотр файла: {{ file.name }}</h1>
+        <div>
+            <a href="{{ file.url }}" class="btn btn-secondary" download>Скачать</a>
+            <a href="javascript:window.close()" class="btn btn-secondary">Закрыть</a>
+            <a href="/task/{{ file.message.task_id }}" class="btn btn-primary">К задаче</a>
+        </div>
+    </div>
+    <p><strong>Тип:</strong> {{ mime_type }}</p>
+
+    <div style="margin-top: 1rem; height: calc(100vh - 200px); overflow: auto; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg);">
+        {% if file_type == "image" %}
+            <img src="{{ file.url }}" alt="{{ file.name }}" style="max-width: 100%; max-height: 100%; display: block; margin: auto;">
+        {% elif file_type == "video" %}
+            <video controls style="width: 100%; height: 100%; max-height: 100%;">
+                <source src="{{ file.url }}" type="{{ mime_type }}">
+                Ваш браузер не поддерживает видео.
+            </video>
+        {% elif file_type == "pdf" %}
+            <iframe src="{{ file.url }}" width="100%" height="100%" style="border: none;"></iframe>
+        {% elif file_type == "text" %}
+            <pre style="margin: 0; padding: 1rem; overflow: auto; height: 100%; background: var(--card-bg);">
+{{ file_content }}
+            </pre>
+        {% elif file_type == "doc" %}
+            <div style="padding: 2rem; text-align: center;">
+                <p>Документ Word не может быть отображен напрямую.</p>
+                <a href="{{ file.url }}" class="btn btn-primary" download>Скачать</a>
+            </div>
+        {% elif file_type == "spreadsheet" %}
+            <div style="padding: 1rem; overflow: auto; height: 100%;">
+                <h3>Таблица данных (первые 100 строк)</h3>
+                <div style="margin-bottom: 1rem;">
+                    <a href="{{ file.url }}" class="btn btn-primary" download>Скачать оригинал</a>
+                </div>
+                <div style="overflow: auto; max-height: calc(100vh - 300px);">
+                    {{ file_content|safe }}
+                </div>
+            </div>
+        {% else %}
+            <div style="padding: 2rem; text-align: center;">
+                <p>Формат файла не поддерживается для предпросмотра.</p>
+                <a href="{{ file.url }}" class="btn btn-primary" download>Скачать</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

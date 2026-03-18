@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование категории - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Редактирование категории</h1>
+
+<div class="card">
+    <form method="POST" action="/categories/{{ category.id }}/edit">
+        <div class="form-group">
+            <label for="name">Название</label>
+            <input type="text" id="name" name="name" value="{{ category.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" rows="3">{{ category.description or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="color">Цвет (HEX)</label>
+            <input type="color" id="color" name="color" value="{{ category.color }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="/categories" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

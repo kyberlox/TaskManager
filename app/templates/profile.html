@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Ваш профиль</h1>
+
+<div class="card">
+    <div style="display: flex; align-items: center; gap: 2rem;">
+        <div>
+            {% if user.avatar_path %}
+            <img src="{{ user.avatar_path }}" alt="Аватар" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+            {% else %}
+            <div style="width: 150px; height: 150px; border-radius: 50%; background-color: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                {{ user.full_name[0] }}
+            </div>
+            {% endif %}
+        </div>
+        <div>
+            <h2>{{ user.full_name }}</h2>
+            <p><strong>Логин:</strong> {{ user.login }}</p>
+            <p><strong>Роль:</strong> {% if user.is_admin %}Администратор{% else %}Пользователь{% endif %}</p>
+            <p><strong>Дата регистрации:</strong> {{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+        </div>
+    </div>
+</div>
+
+<h2 style="margin-top: 2rem; color: var(--accent-green);">Редактировать профиль</h2>
+<div class="card">
+    <form method="POST" action="/profile/update" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="full_name">ФИО</label>
+            <input type="text" id="full_name" name="full_name" value="{{ user.full_name }}">
+        </div>
+        <div class="form-group">
+            <label for="avatar">Аватарка</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+
+{% if user.is_admin %}
+<div style="margin-top: 2rem;">
+    <a href="/users" class="btn btn-secondary">Управление пользователями</a>
+</div>
+{% endif %}
+{% endblock %}

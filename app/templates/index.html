@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Добро пожаловать в Task Manager</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Активные задачи</h2>
+        {% if tasks %}
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            {% for task in tasks %}
+            <li style="padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                <strong><a href="/task/{{ task.id }}" style="color: var(--accent-green);">{{ task.title }}</a></strong>
+                <br>
+                <small style="color: var(--text-secondary);">
+                    {% if task.due_date %}
+                    Срок: {{ task.due_date.strftime('%d.%m.%Y %H:%M') }}
+                    {% else %}
+                    Без срока
+                    {% endif %}
+                    | Категория: {{ task.category.name if task.category else '—' }}
+                </small>
+                <div style="margin-top: 0.5rem;">
+                    <a href="/task/{{ task.id }}/edit" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Редактировать</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>У вас нет активных задач.</p>
+        {% endif %}
+        <div style="margin-top: 1rem;">
+            <a href="/tasks" class="btn btn-primary">Все задачи</a>
+            <a href="/tasks/create" class="btn btn-secondary">Создать задачу</a>
+        </div>
+    </div>
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Календарь задач</h2>
+        <p>Планируйте задачи по дням.</p>
+        <div id="calendar" style="height: 400px;"></div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <h2 style="color: var(--accent-purple);">Быстрые действия</h2>
+    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
+        <a href="/categories/create" class="btn btn-secondary">Создать категорию</a>
+        <a href="/profile" class="btn btn-secondary">Профиль</a>
+    </div>
+</div>
+
+<!-- Подключение FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ru.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'ru',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: '/api/calendar/events',
+            eventClick: function(info) {
+                info.jsEvent.preventDefault();
+                if (info.event.url) {
+                    window.open(info.event.url, '_self');
+                }
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

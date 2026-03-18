@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - Task Manager{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 3rem auto;">
+    <h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Регистрация</h1>
+    <form method="POST" action="/register">
+        <div class="form-group">
+            <label for="full_name">ФИО</label>
+            <input type="text" id="full_name" name="full_name" required>
+        </div>
+        <div class="form-group">
+            <label for="login">Логин</label>
+            <input type="text" id="login" name="login" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm_password">Подтвердите пароль</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+    </form>
+    <p style="margin-top: 1rem; text-align: center;">
+        Уже есть аккаунт? <a href="/login" style="color: var(--accent-green);">Войдите</a>
+    </p>
+</div>
+{% endblock %}

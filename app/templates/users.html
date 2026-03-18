@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Управление пользователями</h1>
+
+<div class="card">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--accent-purple);">
+                <th style="padding: 1rem; text-align: left;">ID</th>
+                <th style="padding: 1rem; text-align: left;">ФИО</th>
+                <th style="padding: 1rem; text-align: left;">Логин</th>
+                <th style="padding: 1rem; text-align: left;">Админ</th>
+                <th style="padding: 1rem; text-align: left;">Дата регистрации</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 1rem;">{{ u.id }}</td>
+                <td style="padding: 1rem;">{{ u.full_name }}</td>
+                <td style="padding: 1rem;">{{ u.login }}</td>
+                <td style="padding: 1rem;">{% if u.is_admin %}Да{% else %}Нет{% endif %}</td>
+                <td style="padding: 1rem;">{{ u.created_at.strftime('%d.%m.%Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="/profile" class="btn btn-primary" style="margin-top: 1rem;">Назад в профиль</a>
+{% endblock %}

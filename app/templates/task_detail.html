@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ task.title }} - Task Manager{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1 style="color: var(--accent-green);">{{ task.title }}</h1>
+    <div>
+        <a href="/task/{{ task.id }}/edit" class="btn btn-secondary">Редактировать</a>
+        <form method="POST" action="/task/{{ task.id }}/delete" style="display: inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить задачу?')">Удалить</button>
+        </form>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <div>
+        <div class="card">
+            <h2 style="color: var(--accent-purple);">Описание</h2>
+            <p>{{ task.description or 'Нет описания' }}</p>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem;">
+                <div>
+                    <strong>Автор:</strong> {{ task.author.full_name }}
+                </div>
+                <div>
+                    <strong>Категория:</strong>
+                    {% if task.category %}
+                    <span style="display: inline-block; width: 12px; height: 12px; background-color: {{ task.category.color }}; border-radius: 50%;"></span>
+                    {{ task.category.name }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>Срок:</strong> {{ task.due_date.strftime('%d.%m.%Y %H:%M') if task.due_date else 'Не установлен' }}
+                </div>
+                <div>
+                    <strong>Статус:</strong> {% if task.is_active %}Активна{% else %}Завершена{% endif %}
+                </div>
+            </div>
+            {% if task.preview_image_path %}
+            <div style="margin-top: 1rem;">
+                <strong>Превью:</strong><br>
+                <img src="{{ task.preview_image_path }}" alt="Превью" style="max-width: 300px; border-radius: 5px;">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <h2 style="color: var(--accent-purple);">Сообщения</h2>
+            <form method="POST" action="/task/{{ task.id }}/message" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="text">Новое сообщение</label>
+                    <textarea id="text" name="text" rows="3" placeholder="Введите текст сообщения..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="files">Прикрепить файлы</label>
+                    <input type="file" id="files" name="files" multiple>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+
+            <div style="margin-top: 2rem;">
+                {% for msg in task.messages|sort(attribute='created_at', reverse=True) %}
+                <div style="border-left: 3px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>{{ msg.author.full_name }}</strong>
+                        <small>{{ msg.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                    <p>{{ msg.text }}</p>
+                    {% if msg.files %}
+                    <div>
+                        <strong>Файлы:</strong>
+                        <ul>
+                            {% for file in msg.files %}
+                            <li>
+                                <a href="{{ file.url }}" target="_blank">{{ file.name }}</a>
+                                <span style="margin-left: 1rem;">
+                                    <a href="{{ file.url }}" target="_blank" class="btn btn-secondary btn-small" style="padding: 0.1rem 0.3rem; font-size: 0.8rem;">Скачать</a>
+                                    <a href="/file/{{ file.id }}/view" target="_blank" class="btn btn-primary btn-small" style="padding: 0.1rem 0.3rem; font-size: 0.8rem;">Просмотр</a>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% if msg.author_id == user.id or user.is_admin %}
+                    <div style="margin-top: 0.5rem;">
+                        <form method="POST" action="/message/{{ msg.id }}/edit" style="display: inline;">
+                            <input type="text" name="text" placeholder="Новый текст" style="width: 200px; padding: 0.3rem;">
+                            <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem;">Изменить</button>
+                        </form>
+                        <form method="POST" action="/message/{{ msg.id }}/delete" style="display: inline;">
+                            <button type="submit" class="btn btn-danger" style="padding: 0.3rem 0.6rem;" onclick="return confirm('Удалить сообщение?')">Удалить</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p style="color: var(--text-secondary);">Сообщений пока нет.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <h2 style="color: var(--accent-purple);">Дочерние задачи</h2>
+            {% if task.children %}
+            <ul>
+                {% for child in task.children %}
+                <li style="margin-bottom: 0.5rem;">
+                    <a href="/task/{{ child.id }}">{{ child.title }}</a>
+                    <small>({{ 'Активна' if child.is_active else 'Завершена' }})</small>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Нет дочерних задач.</p>
+            {% endif %}
+            <a href="/tasks/create?parent_id={{ task.id }}" class="btn btn-primary" style="margin-top: 1rem;">Создать подзадачу</a>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+            <h2 style="color: var(--accent-purple);">Быстрые действия</h2>
+            <a href="/tasks" class="btn btn-secondary" style="display: block; margin-bottom: 0.5rem;">К списку задач</a>
+            <a href="/categories" class="btn btn-secondary" style="display: block; margin-bottom: 0.5rem;">Категории</a>
+            <a href="/" class="btn btn-secondary" style="display: block;">На главную</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
