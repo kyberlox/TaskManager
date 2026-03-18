@@ -165,7 +165,7 @@ docker-compose exec app bash
 services:
   nginx:
     ports:
-      - "8080:80"
+      - "80:80"
 ```
 
 ### Добавление SSL (HTTPS)
@@ -189,10 +189,6 @@ docker-compose exec db pg_dump -U postgres taskmanager > backup.sql
 3. Внесите изменения и закоммитьте (`git commit -m 'Add amazing feature'`).
 4. Запушьте в форк (`git push origin feature/amazing-feature`).
 5. Откройте Pull Request.
-
-## 📄 Лицензия
-
-Этот проект распространяется под лицензией MIT. Подробности см. в файле LICENSE.
 
 ## 👨‍💻 Авторы
 
