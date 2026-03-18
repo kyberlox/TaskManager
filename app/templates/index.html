@@ -5,7 +5,7 @@
 {% block content %}
 <h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Добро пожаловать в Task Manager</h1>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+<div class="home-grid">
     <div class="card">
         <h2 style="color: var(--accent-purple);">Активные задачи</h2>
         {% if tasks %}
@@ -45,7 +45,7 @@
 
 <div class="card" style="margin-top: 2rem;">
     <h2 style="color: var(--accent-purple);">Быстрые действия</h2>
-    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+    <div class="quick-actions">
         <a href="/tasks/create" class="btn btn-primary">Создать задачу</a>
         <a href="/categories/create" class="btn btn-secondary">Создать категорию</a>
         <a href="/profile" class="btn btn-secondary">Профиль</a>

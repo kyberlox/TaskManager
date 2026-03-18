@@ -95,6 +95,59 @@ input:focus, textarea:focus, select:focus {
     background-color: #4a1c1c;
     color: #ff7f7f;
 }
+
+/* Дополнительные утилиты */
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.preview-image {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+
+.message-box {
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent-green);
+}
+
+.message-text {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.login-form, .register-form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--bg-card);
+    border-radius: 12px;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 /* Стили для навигационного меню */
 header {
     background: linear-gradient(90deg, var(--accent-purple), var(--accent-green));
@@ -150,5 +203,91 @@ nav ul li a:hover {
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.8rem;
+    }
+    .logo {
+        font-size: 1.5rem;
+    }
+    nav ul li a {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    .container {
+        margin: 1rem auto;
+        padding: 0 0.8rem;
+    }
+    .card {
+        padding: 1rem;
+        margin-bottom: 0.8rem;
+    }
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    input, textarea, select {
+        padding: 0.6rem;
+    }
+    h1 {
+        font-size: 1.8rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    h3 {
+        font-size: 1.2rem;
+    }
+    /* Таблицы: горизонтальная прокрутка */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    table {
+        font-size: 0.9rem;
+    }
+    /* Календарь FullCalendar */
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .fc .fc-toolbar-title {
+        font-size: 1.2rem;
+    }
+    .fc .fc-button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    /* Формы входа/регистрации */
+    .login-form, .register-form {
+        max-width: 100%;
+        padding: 1rem;
+    }
+    /* Сетка карточек задач */
+    .task-grid {
+        grid-template-columns: 1fr;
+    }
+    /* Главная сетка */
+    .home-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    /* Быстрые действия */
+    .quick-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .quick-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
+    /* Превью изображения */
+    .preview-image {
+        max-width: 100%;
+        height: auto;
+    }
+    /* Сообщения в задаче */
+    .message-box {
+        padding: 0.8rem;
+    }
+    .message-text {
+        font-size: 0.95rem;
     }
 }
