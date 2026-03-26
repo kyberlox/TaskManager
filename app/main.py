@@ -13,7 +13,7 @@ from models import Base, User, Category, Task, Message, File
 from database import engine, SessionLocal
 
 # Импорт роутов
-from routes import auth, users, categories, tasks, messages, files
+from routes import auth, users, categories, tasks, messages, files, assistants, admin, file_analysis
 
 # Создание таблиц
 Base.metadata.create_all(bind=engine)
@@ -24,7 +24,9 @@ app = FastAPI(title="Task Manager", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Настройка шаблонов
+import markdown
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["markdown"] = lambda text: markdown.markdown(text, extensions=["extra", "codehilite"])
 
 # Зависимость для сессии БД
 def get_db():
@@ -69,6 +71,9 @@ app.include_router(categories.router)
 app.include_router(tasks.router)
 app.include_router(messages.router)
 app.include_router(files.router)
+app.include_router(assistants.router)
+app.include_router(admin.router)
+app.include_router(file_analysis.router)
 
 # Главная страница
 @app.get("/", response_class=HTMLResponse)

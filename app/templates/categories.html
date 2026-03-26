@@ -13,6 +13,9 @@
         <thead>
             <tr style="border-bottom: 2px solid var(--accent-purple);">
                 <th style="padding: 1rem; text-align: left;">Название</th>
+                {% if user.is_admin %}
+                <th style="padding: 1rem; text-align: left;">Владелец</th>
+                {% endif %}
                 <th style="padding: 1rem; text-align: left;">Описание</th>
                 <th style="padding: 1rem; text-align: left;">Цвет</th>
                 <th style="padding: 1rem; text-align: left;">Действия</th>
@@ -22,6 +25,15 @@
             {% for cat in categories %}
             <tr style="border-bottom: 1px solid var(--border-color);">
                 <td style="padding: 1rem;">{{ cat.name }}</td>
+                {% if user.is_admin %}
+                <td style="padding: 1rem;">
+                    {% if cat.owner %}
+                        {{ cat.owner.full_name }} ({{ cat.owner.login }})
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                {% endif %}
                 <td style="padding: 1rem;">{{ cat.description or '-' }}</td>
                 <td style="padding: 1rem;">
                     <div style="display: inline-block; width: 20px; height: 20px; background-color: {{ cat.color }}; border-radius: 3px;"></div>

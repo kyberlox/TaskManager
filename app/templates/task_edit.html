@@ -30,6 +30,17 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="parent_id">Родительская задача</label>
+            <select id="parent_id" name="parent_id">
+                <option value="">Без родителя (корневая)</option>
+                {% for parent in available_parents %}
+                <option value="{{ parent.id }}" {% if task.parent_id == parent.id %}selected{% endif %}>
+                    {{ parent.title }} (ID: {{ parent.id }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
             <label for="is_active">Активна</label>
             <input type="checkbox" id="is_active" name="is_active" {% if task.is_active %}checked{% endif %}>
         </div>

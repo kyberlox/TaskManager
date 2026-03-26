@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 import os
 import mimetypes
 import pandas as pd
+import markdown
 
 from models import File as FileModel
 from database import SessionLocal
@@ -12,6 +13,7 @@ from .auth import get_db
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["markdown"] = lambda text: markdown.markdown(text, extensions=["extra", "codehilite"])
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     from models import User

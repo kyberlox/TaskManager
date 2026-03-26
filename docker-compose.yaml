@@ -22,6 +22,10 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}
       DOMAIN: ${DOMAIN}
       SECRET_KEY: ${SECRET_KEY}
+      GIGACHAT_CLIENT_ID: ${GIGACHAT_CLIENT_ID}
+      GIGACHAT_SCOPE: ${GIGACHAT_SCOPE}
+      GIGACHAT_AUTHORIZATION_KEY: ${GIGACHAT_AUTHORIZATION_KEY}
+      GIGACHAT_MODEL: ${GIGACHAT_MODEL}
     volumes:
       - ./app:/app
       - ./app/uploads:/app/uploads

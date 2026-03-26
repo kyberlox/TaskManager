@@ -29,8 +29,15 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="parent_id">Родительская задача (ID)</label>
-            <input type="number" id="parent_id" name="parent_id" value="{{ parent_id or '' }}" placeholder="Оставьте пустым для корневой">
+            <label for="parent_id">Родительская задача</label>
+            <select id="parent_id" name="parent_id">
+                <option value="">Без родителя (корневая)</option>
+                {% for parent in available_parents %}
+                <option value="{{ parent.id }}" {% if parent_id and parent.id == parent_id|int %}selected{% endif %}>
+                    {{ parent.title }} (ID: {{ parent.id }})
+                </option>
+                {% endfor %}
+            </select>
         </div>
         <div class="form-group">
             <label for="preview">Превью изображение</label>

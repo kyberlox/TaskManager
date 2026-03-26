@@ -26,8 +26,10 @@ class Category(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     color = Column(String(7), default="#6a11cb")  # hex цвет
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, default=1)  # временно default=1
 
     tasks = relationship("Task", back_populates="category")
+    owner = relationship("User")
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -55,12 +57,14 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     text = Column(Text, nullable=False)
-    author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
+    author_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # может быть NULL если от помощника
+    assistant_id = Column(Integer, ForeignKey("assistants.id"), nullable=True)
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     author = relationship("User", back_populates="messages")
+    assistant = relationship("Assistant")
     task = relationship("Task", back_populates="messages")
     files = relationship("File", back_populates="message")
 
@@ -72,5 +76,28 @@ class File(Base):
     path = Column(String(500), nullable=False)
     url = Column(String(500), nullable=False)
     message_id = Column(Integer, ForeignKey("messages.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     message = relationship("Message", back_populates="files")
+
+class Assistant(Base):
+    __tablename__ = "assistants"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    context = Column(Text, nullable=True)  # системный промпт/контекст
+    avatar_path = Column(String(500), nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    is_public = Column(Boolean, default=False)
+    functions = Column(Text, nullable=True)  # JSON список функций (для обратной совместимости)
+    function_ids = Column(ARRAY(String), nullable=True, default=[])  # массив ID выбранных функций
+    settings = Column(Text, nullable=True)   # JSON настройки (лимиты, тарифы)
+    capabilities = Column(Text, nullable=True)  # JSON список возможностей (для обратной совместимости)
+    capability_ids = Column(ARRAY(String), nullable=True, default=[])  # массив ID возможностей
+    model = Column(String(100), nullable=True, default="GigaChat-Lite")  # модель GigaChat
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner = relationship("User")

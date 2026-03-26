@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 import shutil
 import os
 from datetime import datetime
+import markdown
 
 from models import Message, File as FileModel, Task, User
 from database import SessionLocal
@@ -12,6 +13,7 @@ from .auth import get_db
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["markdown"] = lambda text: markdown.markdown(text, extensions=["extra", "codehilite"])
 
 UPLOAD_MESSAGE_DIR = "uploads/messages"
 os.makedirs(UPLOAD_MESSAGE_DIR, exist_ok=True)
@@ -105,7 +107,32 @@ async def delete_message(
     message = db.query(Message).filter(Message.id == message_id).first()
     if not message:
         raise HTTPException(status_code=404, detail="Сообщение не найдено")
-    if message.author_id != user.id and not user.is_admin:
+
+    # Получаем задачу, к которой относится сообщение
+    task = db.query(Task).filter(Task.id == message.task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+
+    # Проверка прав:
+    # 1. Пользователь является автором сообщения (message.author_id == user.id)
+    # 2. Пользователь является автором задачи (task.author_id == user.id)
+    # 3. Пользователь является администратором (user.is_admin)
+    # 4. Пользователь является владельцем помощника (если сообщение от помощника)
+    can_delete = False
+    if user.is_admin:
+        can_delete = True
+    elif message.author_id == user.id:
+        can_delete = True
+    elif task.author_id == user.id:
+        can_delete = True
+    elif message.assistant_id is not None:
+        # Проверяем, является ли пользователь владельцем помощника
+        from models import Assistant
+        assistant = db.query(Assistant).filter(Assistant.id == message.assistant_id).first()
+        if assistant and assistant.owner_id == user.id:
+            can_delete = True
+
+    if not can_delete:
         raise HTTPException(status_code=403, detail="Нет прав на удаление")
 
     # Удаляем связанные файлы (из БД и файловой системы)
