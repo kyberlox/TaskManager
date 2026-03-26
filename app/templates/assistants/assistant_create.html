@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Создание помощника - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem; color: var(--accent-green);">Создание виртуального помощника</h1>
+
+<div class="card">
+    <form method="POST" action="/assistants/create" enctype="multipart/form-data" id="assistantForm">
+        <div class="form-group">
+            <label for="name">Название *</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" name="description" rows="3" placeholder="Краткое описание помощника"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="context">Контекст (системный промпт)</label>
+            <textarea id="context" name="context" rows="5" placeholder="Например: Ты — помощник по управлению задачами. Отвечай вежливо и помогай пользователю."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="avatar">Аватар (изображение)</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
+            <small>Рекомендуемый размер: 200x200 пикселей.</small>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_public">
+                Публичный помощник (виден всем пользователям)
+            </label>
+        </div>
+
+        <!-- Функции: чекбоксы -->
+        <div class="form-group">
+            <label>Функции помощника</label>
+            <small>Выберите функции, которые сможет вызывать помощник.</small>
+            <div style="margin-top: 0.5rem; padding: 0.5rem; background: #222; border-radius: 4px; max-height: 300px; overflow-y: auto;">
+                {% for func in all_functions %}
+                <div style="margin-bottom: 0.5rem;">
+                    <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                        <input type="checkbox" name="function_checkbox" value="{{ func.id }}" style="margin-right: 0.5rem; margin-top: 0.2rem;">
+                        <div>
+                            <strong>{{ func.title }}</strong> ({{ func.id }})<br>
+                            <span style="font-size: 0.9rem; color: #ccc;">{{ func.description }}</span>
+                            <div style="font-size: 0.8rem; color: #aaa; margin-top: 0.2rem;">
+                                Категория: {{ func.category }}
+                            </div>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" id="function_ids" name="function_ids" value="">
+            <input type="hidden" id="functions" name="functions" value="[]">
+        </div>
+
+        <!-- Возможности: чекбоксы -->
+        <div class="form-group">
+            <label>Возможности помощника</label>
+            <small>Выберите возможности, которые будут доступны помощнику.</small>
+            <div style="margin-top: 0.5rem; padding: 0.5rem; background: #222; border-radius: 4px; max-height: 200px; overflow-y: auto;">
+                {% for cap in all_capabilities %}
+                <div style="margin-bottom: 0.5rem;">
+                    <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                        <input type="checkbox" name="capability_checkbox" value="{{ cap.id }}" style="margin-right: 0.5rem; margin-top: 0.2rem;">
+                        <div>
+                            <strong>{{ cap.title }}</strong><br>
+                            <span style="font-size: 0.9rem; color: #ccc;">{{ cap.description }}</span>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" id="capability_ids" name="capability_ids" value="">
+            <input type="hidden" id="capabilities" name="capabilities" value="[]">
+        </div>
+
+        <div class="form-group">
+            <label for="settings">Настройки (JSON)</label>
+            <textarea id="settings" name="settings" rows="4" placeholder='{"temperature": 0.7, "max_tokens": 1000}'>{}</textarea>
+            <small>Параметры для API (температура, лимиты и т.д.).</small>
+        </div>
+        <div class="form-group">
+            <label for="model">Модель GigaChat</label>
+            <input type="text" id="model" name="model" value="GigaChat-Lite" placeholder="GigaChat-Lite">
+            <small>Укажите модель, например GigaChat-Lite, GigaChat-Pro и т.д.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+        <a href="/assistants" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+
+<!-- Данные функций в JSON формате -->
+<script type="application/json" id="functions-data">
+{{ all_functions | tojson }}
+</script>
+
+<script>
+    // Загрузка данных функций из JSON
+    const functionsData = JSON.parse(document.getElementById('functions-data').textContent);
+    const allFunctionsMap = {};
+    functionsData.forEach(func => {
+        allFunctionsMap[func.id] = {
+            name: func.name,
+            description: func.description,
+            parameters: func.parameters
+        };
+    });
+
+    // Обновление скрытых полей при изменении чекбоксов
+    function updateHiddenFields() {
+        // Функции
+        const functionCheckboxes = document.querySelectorAll('input[name="function_checkbox"]:checked');
+        const functionIds = Array.from(functionCheckboxes).map(cb => cb.value);
+        document.getElementById('function_ids').value = functionIds.join(',');
+        // Генерация JSON для обратной совместимости
+        const functions = [];
+        functionIds.forEach(id => {
+            const func = allFunctionsMap[id];
+            if (func) {
+                functions.push({
+                    name: func.name,
+                    description: func.description,
+                    parameters: func.parameters
+                });
+            }
+        });
+        document.getElementById('functions').value = JSON.stringify(functions, null, 2);
+
+        // Возможности
+        const capabilityCheckboxes = document.querySelectorAll('input[name="capability_checkbox"]:checked');
+        const capabilityIds = Array.from(capabilityCheckboxes).map(cb => cb.value);
+        document.getElementById('capability_ids').value = capabilityIds.join(',');
+        document.getElementById('capabilities').value = JSON.stringify(capabilityIds);
+    }
+
+    // Назначение обработчиков
+    document.querySelectorAll('input[name="function_checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateHiddenFields);
+    });
+    document.querySelectorAll('input[name="capability_checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateHiddenFields);
+    });
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', updateHiddenFields);
+</script>
+{% endblock %}

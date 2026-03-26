@@ -5,12 +5,14 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import secrets
+import markdown
 
 from models import User
 from database import SessionLocal
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["markdown"] = lambda text: markdown.markdown(text, extensions=["extra", "codehilite"])
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 def truncate_password(password: str, max_bytes: int = 72) -> str:
@@ -26,6 +28,13 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def get_current_user(request: Request, db: Session = Depends(get_db)):
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        return None
+    user = db.query(User).filter(User.session_token == session_token).first()
+    return user
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):

@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import shutil
 import os
+import markdown
 
 from models import User
 from database import SessionLocal
@@ -11,6 +12,7 @@ from .auth import get_db
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+templates.env.filters["markdown"] = lambda text: markdown.markdown(text, extensions=["extra", "codehilite"])
 
 UPLOAD_DIR = "uploads/avatars"
 AVATAR_URL_PREFIX = "/uploads/avatars/"

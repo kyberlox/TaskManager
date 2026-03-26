@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Task Manager{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Минимальные inline стили для структуры */
         * {
@@ -43,6 +44,7 @@
                 <li><a href="/profile">Профиль</a></li>
                 {% if request.state.user and request.state.user.is_admin %}
                 <li><a href="/users">Пользователи</a></li>
+                <li><a href="/admin">Админ-панель</a></li>
                 {% endif %}
                 {% if request.state.user %}
                 <li><a href="/logout">Выйти</a></li>

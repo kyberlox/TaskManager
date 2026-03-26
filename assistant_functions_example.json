@@ -1,0 +1,48 @@
+[
+  {
+    "name": "read_file_and_describe",
+    "description": "Прочитать содержимое текстового файла и предоставить краткое описание",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "type": "integer",
+          "description": "ID файла в системе"
+        }
+      },
+      "required": ["file_id"]
+    }
+  },
+  {
+    "name": "analyze_file_with_prompt",
+    "description": "Проанализировать содержимое файла с использованием пользовательского промта",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "type": "integer",
+          "description": "ID файла в системе"
+        },
+        "user_prompt": {
+          "type": "string",
+          "description": "Промт от пользователя, задающий вопрос или задачу для анализа файла"
+        }
+      },
+      "required": ["file_id", "user_prompt"]
+    }
+  },
+  {
+    "name": "read_file_summary",
+    "description": "Получить краткое содержание файла (автоматическое суммирование)",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "type": "integer",
+          "description": "ID файла в системе"
+        }
+      },
+      "required": ["file_id"]
+    }
+  }
+]

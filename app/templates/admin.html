@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель - Task Manager{% endblock %}
+
+{% block content %}
+<h1 style="color: var(--accent-green); margin-bottom: 1.5rem;">Админ-панель</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card" style="text-align: center;">
+        <h3 style="color: var(--accent-purple);">Пользователи</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--accent-green);">{{ total_users }}</p>
+        <a href="/users" class="btn btn-secondary">Управление</a>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="color: var(--accent-purple);">Задачи</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--accent-green);">{{ total_tasks }}</p>
+        <a href="/tasks" class="btn btn-secondary">Просмотр</a>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="color: var(--accent-purple);">Помощники</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--accent-green);">{{ total_assistants }}</p>
+        <a href="/assistants" class="btn btn-secondary">Управление</a>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="color: var(--accent-purple);">Категории</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--accent-green);">{{ total_categories }}</p>
+        <a href="/categories" class="btn btn-secondary">Управление</a>
+    </div>
+    <div class="card" style="text-align: center;">
+        <h3 style="color: var(--accent-purple);">Сообщения</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--accent-green);">{{ total_messages }}</p>
+        <a href="/tasks" class="btn btn-secondary">Просмотр</a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Последние пользователи</h2>
+        {% if recent_users %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">Логин</th>
+                    <th style="padding: 0.5rem; text-align: left;">ФИО</th>
+                    <th style="padding: 0.5rem; text-align: left;">Дата регистрации</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in recent_users %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;">{{ u.login }}</td>
+                    <td style="padding: 0.5rem;">{{ u.full_name }}</td>
+                    <td style="padding: 0.5rem;">{{ u.created_at.strftime('%d.%m.%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет пользователей.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Последние задачи</h2>
+        {% if recent_tasks %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">Название</th>
+                    <th style="padding: 0.5rem; text-align: left;">Автор</th>
+                    <th style="padding: 0.5rem; text-align: left;">Дата создания</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in recent_tasks %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;"><a href="/task/{{ t.id }}">{{ t.title }}</a></td>
+                    <td style="padding: 0.5rem;">{{ t.author.full_name if t.author else '-' }}</td>
+                    <td style="padding: 0.5rem;">{{ t.created_at.strftime('%d.%m.%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет задач.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Все категории</h2>
+        {% if all_categories %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">ID</th>
+                    <th style="padding: 0.5rem; text-align: left;">Название</th>
+                    <th style="padding: 0.5rem; text-align: left;">Владелец</th>
+                    <th style="padding: 0.5rem; text-align: left;">Цвет</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in all_categories %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;">{{ cat.id }}</td>
+                    <td style="padding: 0.5rem;">{{ cat.name }}</td>
+                    <td style="padding: 0.5rem;">{{ cat.owner.full_name if cat.owner else '-' }}</td>
+                    <td style="padding: 0.5rem;">
+                        <span style="display: inline-block; width: 20px; height: 20px; background-color: {{ cat.color }}; border-radius: 3px;"></span>
+                        {{ cat.color }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет категорий.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Все задачи</h2>
+        {% if all_tasks %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">ID</th>
+                    <th style="padding: 0.5rem; text-align: left;">Название</th>
+                    <th style="padding: 0.5rem; text-align: left;">Автор</th>
+                    <th style="padding: 0.5rem; text-align: left;">Статус</th>
+                    <th style="padding: 0.5rem; text-align: left;">Дата создания</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in all_tasks %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;">{{ t.id }}</td>
+                    <td style="padding: 0.5rem;"><a href="/task/{{ t.id }}">{{ t.title }}</a></td>
+                    <td style="padding: 0.5rem;">{{ t.author.full_name if t.author else '-' }}</td>
+                    <td style="padding: 0.5rem;">{{ 'Активна' if t.is_active else 'Неактивна' }}</td>
+                    <td style="padding: 0.5rem;">{{ t.created_at.strftime('%d.%m.%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет задач.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Все сообщения</h2>
+        {% if all_messages %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">ID</th>
+                    <th style="padding: 0.5rem; text-align: left;">Текст</th>
+                    <th style="padding: 0.5rem; text-align: left;">Автор</th>
+                    <th style="padding: 0.5rem; text-align: left;">Помощник</th>
+                    <th style="padding: 0.5rem; text-align: left;">Задача</th>
+                    <th style="padding: 0.5rem; text-align: left;">Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in all_messages %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;">{{ msg.id }}</td>
+                    <td style="padding: 0.5rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ msg.text }}
+                    </td>
+                    <td style="padding: 0.5rem;">
+                        {% if msg.author %}
+                            {{ msg.author.full_name }}
+                        {% elif msg.assistant %}
+                            {{ msg.assistant.name }} (помощник)
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td style="padding: 0.5rem;">{{ msg.assistant.name if msg.assistant else '—' }}</td>
+                    <td style="padding: 0.5rem;">
+                        {% if msg.task %}
+                            <a href="/task/{{ msg.task.id }}">{{ msg.task.title }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td style="padding: 0.5rem;">{{ msg.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет сообщений.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2 style="color: var(--accent-purple);">Все файлы</h2>
+        {% if all_files %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--accent-purple);">
+                    <th style="padding: 0.5rem; text-align: left;">ID</th>
+                    <th style="padding: 0.5rem; text-align: left;">Название</th>
+                    <th style="padding: 0.5rem; text-align: left;">URL</th>
+                    <th style="padding: 0.5rem; text-align: left;">Сообщение</th>
+                    <th style="padding: 0.5rem; text-align: left;">Задача</th>
+                    <th style="padding: 0.5rem; text-align: left;">Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in all_files %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 0.5rem;">{{ file.id }}</td>
+                    <td style="padding: 0.5rem;">{{ file.name }}</td>
+                    <td style="padding: 0.5rem;">
+                        <a href="{{ file.url }}" target="_blank">Скачать</a>
+                    </td>
+                    <td style="padding: 0.5rem;">
+                        {% if file.message %}
+                            <a href="/task/{{ file.message.task.id }}#message-{{ file.message.id }}">Сообщение {{ file.message.id }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td style="padding: 0.5rem;">
+                        {% if file.message and file.message.task %}
+                            <a href="/task/{{ file.message.task.id }}">{{ file.message.task.title }}</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td style="padding: 0.5rem;">{{ file.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Нет файлов.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <h2 style="color: var(--accent-purple);">Быстрые действия</h2>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="/users" class="btn btn-primary">Управление пользователями</a>
+        <a href="/assistants" class="btn btn-primary">Управление помощниками</a>
+        <a href="/categories" class="btn btn-primary">Управление категориями</a>
+        <a href="/tasks" class="btn btn-primary">Просмотр всех задач</a>
+        <a href="/" class="btn btn-secondary">На главную</a>
+    </div>
+</div>
+{% endblock %}
